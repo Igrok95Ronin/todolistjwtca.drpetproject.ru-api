@@ -1,0 +1,44 @@
+services:
+  dbToDolistJWTCA:
+    restart: always
+    image: postgres:15.2
+    environment:
+      POSTGRES_USER: todolistJWTCASuperUser
+      POSTGRES_PASSWORD: todolistJWTCASuperPassword
+      POSTGRES_DB: todolistJWTCADB
+    ports:
+      - 5434:5432
+    volumes:
+      - pgdatatodolistjwtca:/var/lib/postgresql/data
+      - ./migrations/todolistjwtca/createtable.sql:/docker-entrypoint-initdb.d/createtable.sql
+      - ./migrations/todolistjwtca/inserttable.sql:/docker-entrypoint-initdb.d/inserttable.sql
+    networks:
+      - drpetproject-network
+
+#  apiToDoListJWT:
+#    image: todolistjwtdrpetprojectapi:dev.v.1.0
+#    container_name: todolistapijwt
+#    ports:
+#      - 8081:8081
+#    networks:
+#      - drpetproject-network
+#    depends_on:
+#      - dbToDolistJWT
+#
+#  webTodoListJWT:
+#    image: todolistjwtdrpetprojectweb:dev.v.1.0
+#    container_name: todolistjwtweb
+#    ports:
+#      - 81:80
+#    networks:
+#      drpetproject-network:
+#    depends_on:
+#      - apiToDoListJWT
+
+volumes:
+  pgdatatodolistjwtca:
+    name: pgdatatodolistjwtca
+
+networks:
+  drpetproject-network:
+    driver: bridge

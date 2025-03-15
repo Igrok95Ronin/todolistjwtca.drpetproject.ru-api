@@ -3,9 +3,9 @@ services:
     restart: always
     image: postgres:15.2
     environment:
-      POSTGRES_USER: todolistJWTCASuperUser
-      POSTGRES_PASSWORD: todolistJWTCASuperPassword
-      POSTGRES_DB: todolistJWTCADB
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - 5434:5432
     volumes:

@@ -1,8 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/config"
+	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers"
+	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/middleware"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/repository"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/pkg/logging"
 	"github.com/julienschmidt/httprouter"
@@ -28,10 +29,15 @@ func main() {
 	// Создаем роутер
 	router := httprouter.New()
 
-	router.GET("/", Home)
+	// Инициализируем обработчики (handlers) и передаем им зависимости
+	handler := handlers.NewHandler(cfg, logger, db)
+	handler.RegisterRoutes(router)
+
+	// Обработка cors, Context
+	corsHandler := middleware.CorsSettings().Handler(middleware.RequestContext(router))
 
 	// Запускаем сервер
-	start(router, cfg, logger)
+	start(corsHandler, cfg, logger)
 }
 
 func start(router http.Handler, cfg *config.Config, logger *logging.Logger) {
@@ -47,9 +53,4 @@ func start(router http.Handler, cfg *config.Config, logger *logging.Logger) {
 
 	logger.Infof("Сервер запущен на %v", cfg.Port)
 	logger.Fatal(server.ListenAndServe())
-}
-
-func Home(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-
-	fmt.Println("HOME!")
 }

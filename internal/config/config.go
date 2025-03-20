@@ -10,8 +10,9 @@ import (
 
 // Структура конфигурации
 type Config struct {
-	Port string         `yaml:"port"`
-	DB   DatabaseConfig `yaml:"db"`
+	Port  string         `yaml:"port"`
+	DB    DatabaseConfig `yaml:"db"`
+	Token Token          `yaml:"token"`
 }
 
 // Подконфигурация для базы данных
@@ -23,6 +24,11 @@ type DatabaseConfig struct {
 	Port     int    `yaml:"port"`
 	SslMode  string `yaml:"sslMode"`
 	TimeZone string `yaml:"timeZone"`
+}
+
+type Token struct {
+	Access  string `yaml:"access"`
+	Refresh string `yaml:"refresh"`
 }
 
 // Глобальная переменная для хранения конфигурации
@@ -62,6 +68,12 @@ func overrideWithEnv(cfg *Config) {
 	}
 	if dbName := os.Getenv("POSTGRES_DB"); dbName != "" {
 		cfg.DB.DBName = dbName
+	}
+	if accessToken := os.Getenv("ACCESS_TOKEN"); accessToken != "" {
+		cfg.Token.Access = accessToken
+	}
+	if refreshToken := os.Getenv("REFRESH_TOKEN"); refreshToken != "" {
+		cfg.Token.Refresh = refreshToken
 	}
 
 }

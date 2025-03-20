@@ -10,6 +10,8 @@ import (
 type UserRepository interface {
 	UserExists(userName, email string, ctx context.Context) error
 	Register(users models.Users, ctx context.Context) error
+	GetUser(ctx context.Context, users models.Users, email string) (*models.Users, error)
+	UpdateRefreshToken(ctx context.Context, userID int64, refreshToken string) error
 }
 
 type userRepository struct {
@@ -33,5 +35,26 @@ func (r *userRepository) UserExists(userName, email string, ctx context.Context)
 func (r *userRepository) Register(users models.Users, ctx context.Context) error {
 	query := "INSERT INTO users (user_name, email, password_hash, created_at) VALUES ($1,$2, $3, NOW())"
 	_, err := r.db.ExecContext(ctx, query, users.UserName, users.Email, users.PasswordHash)
+	return err
+}
+
+// GetUser получаем пользователя из БД
+func (r *userRepository) GetUser(ctx context.Context, users models.Users, email string) (*models.Users, error) {
+	query := "SELECT id, email, refresh_token, password_hash FROM users WHERE email = $1 LIMIT 1"
+
+	err := r.db.QueryRowContext(ctx, query, email).Scan(
+		&users.ID,
+		&users.Email,
+		&users.RefreshToken,
+		&users.PasswordHash,
+	)
+
+	return &users, err
+}
+
+// UpdateRefreshToken обновляем refreshToken в БД
+func (r *userRepository) UpdateRefreshToken(ctx context.Context, userID int64, refreshToken string) error {
+	query := "UPDATE users SET refresh_token = $1 WHERE id = $2"
+	_, err := r.db.ExecContext(ctx, query, refreshToken, userID)
 	return err
 }

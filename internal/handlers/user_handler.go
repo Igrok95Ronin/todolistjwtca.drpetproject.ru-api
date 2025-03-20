@@ -35,7 +35,8 @@ func (h *UserHandler) register(w http.ResponseWriter, r *http.Request, _ httprou
 		return
 	}
 
-	if err := h.service.UserExists(users, ctx); err != nil {
+	// UserExists проверяем есть ли пользователь и регистрирует нового пользователя
+	if err := h.service.UserExists(ctx, users); err != nil {
 		h.logger.Errorf("Ошибка при регистрации пользователя: %s", err)
 		httperror.WriteJSONError(w, "Ошибка при регистрации пользователя", err, http.StatusInternalServerError)
 		return
@@ -46,5 +47,30 @@ func (h *UserHandler) register(w http.ResponseWriter, r *http.Request, _ httprou
 	_, err := w.Write([]byte("Пользователь успешно зарегистрирован"))
 	if err != nil {
 		h.logger.Errorf("Обработка ошибки ответа: %s", err)
+	}
+}
+
+// Логин (получение access и refresh токенов)
+func (h *UserHandler) login(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	ctx := r.Context()
+	var users models.Users
+
+	if err := json.NewDecoder(r.Body).Decode(&users); err != nil {
+		httperror.WriteJSONError(w, "Ошибка декодирования в json", err, http.StatusBadRequest)
+		h.logger.Errorf("Ошибка декодирования в json: %s", err)
+		return
+	}
+
+	if err := h.service.Login(ctx, w, users); err != nil {
+		h.logger.Errorf("Ошибка при авторизации пользователя: %s", err)
+		httperror.WriteJSONError(w, "Ошибка при авторизации пользователя", err, http.StatusInternalServerError)
+		return
+	}
+
+	// Ответ для клиента
+	w.WriteHeader(http.StatusOK)
+	_, err := w.Write([]byte("Авторизация прошла успешно"))
+	if err != nil {
+		h.logger.Errorf("Ошибка авторизации: %s", err)
 	}
 }

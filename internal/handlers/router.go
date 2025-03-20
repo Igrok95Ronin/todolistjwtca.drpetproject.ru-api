@@ -20,7 +20,7 @@ type Handler struct {
 // NewHandler создаёт новый обработчик
 func NewHandler(cfg *config.Config, logger *logging.Logger, db *sql.DB) *Handler {
 	userRepo := repository.NewUserRepository(db)
-	userSrv := service.NewUserService(userRepo)
+	userSrv := service.NewUserService(userRepo, cfg)
 
 	return &Handler{
 		cfg:      cfg,
@@ -35,4 +35,5 @@ func (h *Handler) RegisterRoutes(router *httprouter.Router) {
 	userHandler := NewUserHandler(h.userSvc, h.logger)
 
 	router.POST("/register", userHandler.register) // Регистрация (создание нового пользователя)
+	router.POST("/login", userHandler.login)       // Логин (получение access и refresh токенов)
 }

@@ -4,7 +4,7 @@ CREATE TABLE users (
                        user_name TEXT NOT NULL UNIQUE, -- Имя пользователя должно быть уникальным
                        email TEXT NOT NULL UNIQUE, -- Email также должен быть уникальным
                        password_hash TEXT NOT NULL, -- Поле для хеша пароля не должно быть пустым
-                       refresh_token TEXT, -- Поле для refresh токена (может быть NULL)
+                       refresh_token TEXT DEFAULT '', -- Поле для refresh токена (может быть NULL)
                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Время создания записи
 );
 

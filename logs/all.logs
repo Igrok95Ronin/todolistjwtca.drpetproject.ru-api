@@ -92,3 +92,9 @@
 [31mERRO[0m[2025-03-20T14:38:45+03:00]user_handler.go:40 github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers.(*UserHandler).register() Ошибка при регистрации пользователя: Пользователь с таким username или email уже существует 
 [31mERRO[0m[2025-03-20T14:39:31+03:00]user_handler.go:65 github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers.(*UserHandler).login() Ошибка при авторизации пользователя: Неверный email или пароль: %!w(<nil>) 
 [31mERRO[0m[2025-03-20T14:39:43+03:00]user_handler.go:65 github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers.(*UserHandler).login() Ошибка при авторизации пользователя: ошибка при проверке пользователя: sql: no rows in result set 
+[36mINFO[0m[2025-03-20T14:42:33+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[36mINFO[0m[2025-03-20T19:28:36+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[36mINFO[0m[2025-03-20T19:45:07+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[36mINFO[0m[2025-03-20T19:45:17+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[36mINFO[0m[2025-03-20T19:48:20+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[36mINFO[0m[2025-03-20T19:50:30+03:00]main.go:54 main.start() Сервер запущен на :8082                      

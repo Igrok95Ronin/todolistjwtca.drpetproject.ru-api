@@ -12,6 +12,7 @@ type UserRepository interface {
 	Register(users models.Users, ctx context.Context) error
 	GetUser(ctx context.Context, users models.Users, email string) (*models.Users, error)
 	UpdateRefreshToken(ctx context.Context, userID int64, refreshToken string) error
+	FindUserByRefreshToken(ctx context.Context, users models.Users, userID int64) (*models.Users, error)
 }
 
 type userRepository struct {
@@ -57,4 +58,15 @@ func (r *userRepository) UpdateRefreshToken(ctx context.Context, userID int64, r
 	query := "UPDATE users SET refresh_token = $1 WHERE id = $2"
 	_, err := r.db.ExecContext(ctx, query, refreshToken, userID)
 	return err
+}
+
+// FindUserByRefreshToken Проверим, что refresh-токен совпадает с тем, что хранится в базе
+func (r *userRepository) FindUserByRefreshToken(ctx context.Context, users models.Users, userID int64) (*models.Users, error) {
+	query := "SELECT id, refresh_token FROM users WHERE id = $1 LIMIT 1"
+	err := r.db.QueryRowContext(ctx, query, userID).Scan(
+		&users.ID,
+		&users.RefreshToken,
+	)
+
+	return &users, err
 }

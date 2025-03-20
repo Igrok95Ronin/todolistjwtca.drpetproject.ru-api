@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/config"
@@ -21,6 +22,7 @@ import (
 type UserService interface {
 	UserExists(ctx context.Context, users models.Users) error
 	Login(ctx context.Context, w http.ResponseWriter, users models.Users) error
+	Refresh(ctx context.Context, w http.ResponseWriter, users models.Users, refreshToken string) error
 }
 
 type userService struct {
@@ -167,6 +169,74 @@ func (s *userService) Login(ctx context.Context, w http.ResponseWriter, users mo
 	return nil
 }
 
+// RefreshHandler - обработчик обновления токенов.
+func (s *userService) Refresh(ctx context.Context, w http.ResponseWriter, users models.Users, refreshToken string) error {
+	// 2. Валидируем refresh-токен
+	claims, err := ValidateRefreshToken(s, refreshToken)
+	if err != nil {
+		return fmt.Errorf("Невалидный или просроченный refresh-токен: %s", err)
+	}
+
+	// 3. Проверим, что пользователь существует
+	userByRefreshToken, err := s.repo.FindUserByRefreshToken(ctx, users, claims.UserID)
+	if err != nil {
+		return fmt.Errorf("Пользователь не найден: %s", err)
+	}
+
+	// 4. Проверим, что refresh-токен совпадает с тем, что хранится в базе
+	if userByRefreshToken.RefreshToken != refreshToken {
+		return fmt.Errorf("Refresh-токен не соответствует сохранённому в базе: %s", err)
+	}
+
+	// 5. Генерируем новые токены
+	// Генерируем access-токен
+	newAccessToken, err := GenerateAccessToken(s, userByRefreshToken.ID)
+	if err != nil {
+		return fmt.Errorf("Ошибка при генерации access-токена: %w", err)
+	}
+
+	// Генерируем refresh-токен
+	newRefreshToken, err := GenerateRefreshToken(s, userByRefreshToken.ID)
+	if err != nil {
+		return fmt.Errorf("Ошибка при генерации refresh-токена: %w", err)
+	}
+
+	// 6. Сохраняем новый refresh-токен в базе
+	userByRefreshToken.RefreshToken = newRefreshToken
+	if err = s.repo.UpdateRefreshToken(ctx, userByRefreshToken.ID, newRefreshToken); err != nil {
+		return fmt.Errorf("Ошибка при сохранении нового refresh-токена: %s", err)
+	}
+
+	// 7. Обновляем куки (access и refresh)
+	http.SetCookie(w, &http.Cookie{
+		Name:     "access_token",
+		Value:    newAccessToken,
+		Expires:  time.Now().Add(15 * time.Minute),
+		HttpOnly: true,
+		Path:     "/",
+	})
+	http.SetCookie(w, &http.Cookie{
+		Name:     "refresh_token",
+		Value:    newRefreshToken,
+		Expires:  time.Now().Add(30 * 24 * time.Hour),
+		HttpOnly: true,
+		Path:     "/",
+	})
+
+	// 8. Успешный ответ с информацией о токенах
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	response := map[string]string{
+		"access_token":  newAccessToken,
+		"refresh_token": newRefreshToken,
+	}
+	if err = json.NewEncoder(w).Encode(response); err != nil {
+		return fmt.Errorf("Ошибка при отправке ответа: %s", err)
+	}
+
+	return nil
+}
+
 //---------------------------------------------------------------------------------------
 //                                 УТИЛИТНЫЕ ФУНКЦИИ
 //---------------------------------------------------------------------------------------
@@ -247,4 +317,26 @@ func GenerateRefreshToken(s *userService, userID int64) (string, error) {
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(s.cfg.Token.Refresh))
+}
+
+// ValidateRefreshToken - парсит и валидирует refresh-токен. Возвращает claims, если успешно.
+func ValidateRefreshToken(s *userService, refreshToken string) (*models.MyClaims, error) {
+	keyFunc := func(token *jwt.Token) (interface{}, error) {
+		// Возвращаем секрет, которым подписан refresh-токен
+		return []byte(s.cfg.Token.Refresh), nil
+	}
+
+	// Парсим токен
+	parsedToken, err := jwt.ParseWithClaims(refreshToken, &models.MyClaims{}, keyFunc)
+	if err != nil {
+		return nil, err
+	}
+
+	// Проверяем, что claims верного типа и токен валиден
+	claims, ok := parsedToken.Claims.(*models.MyClaims)
+	if !ok || !parsedToken.Valid {
+		return nil, fmt.Errorf("Невалидный токен")
+	}
+
+	return claims, nil
 }

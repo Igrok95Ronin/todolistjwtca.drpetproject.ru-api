@@ -36,4 +36,5 @@ func (h *Handler) RegisterRoutes(router *httprouter.Router) {
 
 	router.POST("/register", userHandler.register) // Регистрация (создание нового пользователя)
 	router.POST("/login", userHandler.login)       // Логин (получение access и refresh токенов)
+	router.POST("/refresh", userHandler.refresh)   // Обновление (refresh) токенов
 }

@@ -74,3 +74,24 @@ func (h *UserHandler) login(w http.ResponseWriter, r *http.Request, _ httprouter
 		h.logger.Errorf("Ошибка авторизации: %s", err)
 	}
 }
+
+// RefreshHandler - обработчик обновления токенов.
+func (h *UserHandler) refresh(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	ctx := r.Context()
+	var users models.Users
+	// 1. Извлекаем refresh_token из куки
+	refreshCookie, err := r.Cookie("refresh_token")
+	if err != nil {
+		httperror.WriteJSONError(w, "Необходим refresh_token (cookie отсутствует)", err, http.StatusUnauthorized)
+		h.logger.Errorf("Необходим refresh_token (cookie отсутствует): %s", err)
+		return
+	}
+	refreshToken := refreshCookie.Value
+
+	// 2. Валидируем refresh-токен
+	if err = h.service.Refresh(ctx, w, users, refreshToken); err != nil {
+		httperror.WriteJSONError(w, "Невалидный или просроченный refresh-токен", err, http.StatusUnauthorized)
+		h.logger.Errorf("Невалидный или просроченный refresh-токен: %s", err)
+		return
+	}
+}

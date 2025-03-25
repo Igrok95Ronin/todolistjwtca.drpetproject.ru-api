@@ -2,12 +2,14 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/models"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/service"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/pkg/httperror"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/pkg/logging"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
+	"time"
 )
 
 // UserHandler обрабатывает запросы, связанные с users
@@ -93,5 +95,49 @@ func (h *UserHandler) refresh(w http.ResponseWriter, r *http.Request, _ httprout
 		httperror.WriteJSONError(w, "Невалидный или просроченный refresh-токен", err, http.StatusUnauthorized)
 		h.logger.Errorf("Невалидный или просроченный refresh-токен: %s", err)
 		return
+	}
+}
+
+// ProtectedHandler - обработчик примера защищённого маршрута.
+// Доступ сюда возможен только через Auth.
+func (h *UserHandler) protected(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	//// Достаём user_id из контекста (установили в AuthMiddleware).
+	//userID, ok := r.Context().Value("user_id").(uint)
+	//if !ok {
+	//	// Если что-то пошло не так и user_id не смогли получить
+	//	http.Error(w, "Не удалось получить user_id из контекста", http.StatusInternalServerError)
+	//	return
+	//}
+
+	// Если всё ок, возвращаем сообщение, что доступ разрешён.
+	w.WriteHeader(http.StatusOK)
+	_, err := w.Write([]byte(fmt.Sprintf("Доступ к защищённому маршруту разрешен.")))
+	if err != nil {
+		h.logger.Error(err)
+	}
+}
+
+// Выход из системы
+func (h *UserHandler) logout(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	// Устанавливаем куки с прошедшей датой
+	http.SetCookie(w, &http.Cookie{
+		Name:     "access_token",
+		Value:    "",
+		Expires:  time.Unix(0, 0), // просрочен
+		HttpOnly: true,
+		Path:     "/",
+	})
+	http.SetCookie(w, &http.Cookie{
+		Name:     "refresh_token",
+		Value:    "",
+		Expires:  time.Unix(0, 0),
+		HttpOnly: true,
+		Path:     "/",
+	})
+
+	w.WriteHeader(http.StatusOK)
+	_, err := w.Write([]byte("Вы успешно вышли из системы"))
+	if err != nil {
+		h.logger.Error(err)
 	}
 }

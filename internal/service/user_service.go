@@ -340,3 +340,25 @@ func ValidateRefreshToken(s *userService, refreshToken string) (*models.MyClaims
 
 	return claims, nil
 }
+
+// ValidateAccessToken - парсит и валидирует access-токен. Возвращает claims, если успешно.
+func ValidateAccessToken(cfg *config.Config, accessToken string) (*models.MyClaims, error) {
+	keyFunc := func(token *jwt.Token) (interface{}, error) {
+		// Возвращаем секрет, которым подписан access-токен
+		return []byte(cfg.Token.Access), nil
+	}
+
+	// Парсим токен
+	parsedToken, err := jwt.ParseWithClaims(accessToken, &models.MyClaims{}, keyFunc)
+	if err != nil {
+		return nil, err
+	}
+
+	// Проверяем, что claims верного типа и токен валиден
+	claims, ok := parsedToken.Claims.(*models.MyClaims)
+	if !ok || !parsedToken.Valid {
+		return nil, fmt.Errorf("Невалидный токен")
+	}
+
+	return claims, nil
+}

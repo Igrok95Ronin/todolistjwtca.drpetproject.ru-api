@@ -13,6 +13,7 @@ type UserRepository interface {
 	GetUser(ctx context.Context, users models.Users, email string) (*models.Users, error)
 	UpdateRefreshToken(ctx context.Context, userID int64, refreshToken string) error
 	FindUserByRefreshToken(ctx context.Context, users models.Users, userID int64) (*models.Users, error)
+	GetUserProfileDB(ctx context.Context, userID int64) (*models.Users, error)
 }
 
 type userRepository struct {
@@ -50,7 +51,11 @@ func (r *userRepository) GetUser(ctx context.Context, users models.Users, email 
 		&users.PasswordHash,
 	)
 
-	return &users, err
+	if err != nil {
+		return nil, err
+	}
+
+	return &users, nil
 }
 
 // UpdateRefreshToken обновляем refreshToken в БД
@@ -68,5 +73,28 @@ func (r *userRepository) FindUserByRefreshToken(ctx context.Context, users model
 		&users.RefreshToken,
 	)
 
-	return &users, err
+	if err != nil {
+		return nil, err
+	}
+
+	return &users, nil
+}
+
+// GetUserProfile Получить данные о текущем пользователе из БД
+func (r *userRepository) GetUserProfileDB(ctx context.Context, userID int64) (*models.Users, error) {
+	query := "SELECT id, user_name, email FROM users WHERE id = $1 LIMIT 1"
+
+	var user models.Users
+
+	err := r.db.QueryRowContext(ctx, query, userID).Scan(
+		&user.ID,
+		&user.UserName,
+		&user.Email,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }

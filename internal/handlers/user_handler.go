@@ -141,3 +141,41 @@ func (h *UserHandler) logout(w http.ResponseWriter, r *http.Request, _ httproute
 		h.logger.Error(err)
 	}
 }
+
+type UserProfileResponse struct {
+	ID       int64  `json:"id"`
+	UserName string `json:"userName"`
+	Email    string `json:"email"`
+}
+
+// Получить данные о текущем пользователе
+func (h *UserHandler) getUserProfile(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	ctx := r.Context()
+	userID, ok := r.Context().Value("user_id").(int64)
+	if !ok {
+		h.logger.Error("Не удалось получить user_id из контекста")
+		httperror.WriteJSONError(w, "Не удалось получить user_id из контекста", nil, http.StatusUnauthorized)
+		return
+	}
+
+	userProfile, err := h.service.GetUserProfile(ctx, userID)
+	if err != nil {
+		httperror.WriteJSONError(w, "Возможно данные о пользователе отсутствуют", err, http.StatusBadRequest)
+		h.logger.Errorf("Возможно данные о пользователе отсутствуют: %s", err)
+		return
+	}
+
+	userProfileResponse := UserProfileResponse{
+		ID:       userProfile.ID,
+		UserName: userProfile.UserName,
+		Email:    userProfile.Email,
+	}
+
+	// Отправляем JSON-ответ с user_name
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(userProfileResponse)
+	if err != nil {
+		h.logger.Error(err)
+	}
+}

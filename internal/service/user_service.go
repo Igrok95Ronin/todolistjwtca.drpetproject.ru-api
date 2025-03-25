@@ -23,6 +23,7 @@ type UserService interface {
 	UserExists(ctx context.Context, users models.Users) error
 	Login(ctx context.Context, w http.ResponseWriter, users models.Users) error
 	Refresh(ctx context.Context, w http.ResponseWriter, users models.Users, refreshToken string) error
+	GetUserProfile(ctx context.Context, userID int64) (*models.Users, error)
 }
 
 type userService struct {
@@ -235,6 +236,15 @@ func (s *userService) Refresh(ctx context.Context, w http.ResponseWriter, users 
 	}
 
 	return nil
+}
+
+// GetUserProfile Получить данные о текущем пользователе
+func (s *userService) GetUserProfile(ctx context.Context, userID int64) (*models.Users, error) {
+	userProfile, err := s.repo.GetUserProfileDB(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	return userProfile, err
 }
 
 //---------------------------------------------------------------------------------------

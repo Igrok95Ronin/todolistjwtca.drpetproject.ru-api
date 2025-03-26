@@ -118,3 +118,16 @@
 [36mINFO[0m[2025-03-26T12:28:08+03:00]main.go:54 main.start() Сервер запущен на :8082                      
 [36mINFO[0m[2025-03-26T12:28:43+03:00]main.go:54 main.start() Сервер запущен на :8082                      
 [36mINFO[0m[2025-03-26T12:29:48+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[36mINFO[0m[2025-03-26T12:30:25+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[36mINFO[0m[2025-03-26T14:04:19+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[36mINFO[0m[2025-03-26T16:01:09+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[36mINFO[0m[2025-03-26T16:01:26+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[36mINFO[0m[2025-03-26T16:15:32+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[31mERRO[0m[2025-03-26T16:15:33+03:00]note_handler.go:79 github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers.NoteHandler.createPost() %!w(*errors.errorString=&{Ошибка декодирования в JSON}): EOF 
+[36mINFO[0m[2025-03-26T16:15:56+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[31mERRO[0m[2025-03-26T16:15:57+03:00]note_handler.go:79 github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers.NoteHandler.createPost() Ошибка декодирования в JSON: EOF             
+[36mINFO[0m[2025-03-26T16:16:39+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[31mERRO[0m[2025-03-26T16:16:40+03:00]note_handler.go:79 github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers.NoteHandler.createPost() %!w(*errors.errorString=&{Ошибка декодирования в JSON}): EOF 
+[31mERRO[0m[2025-03-26T16:18:26+03:00]note_handler.go:79 github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers.NoteHandler.createPost() %!w(*errors.errorString=&{Ошибка декодирования в JSON}): invalid character '\r' in string literal 
+[36mINFO[0m[2025-03-26T16:23:08+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[36mINFO[0m[2025-03-26T16:31:49+03:00]main.go:54 main.start() Сервер запущен на :8082                      

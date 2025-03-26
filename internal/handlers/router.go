@@ -51,4 +51,5 @@ func (h *Handler) RegisterRoutes(router *httprouter.Router) {
 	router.GET("/users/me", middleware.Auth(userHandler.getUserProfile)) // Получить данные о текущем пользователе
 
 	router.GET("/notes", middleware.Auth(noteHandler.getAllNotes)) // Получить все заметки
+	router.POST("/notes", middleware.Auth(noteHandler.createPost)) // Создать заметку
 }

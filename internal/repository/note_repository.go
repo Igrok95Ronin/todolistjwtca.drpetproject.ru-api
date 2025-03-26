@@ -4,11 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/models"
+	"time"
 )
 
 // NoteRepository - интерфейс для работы с заметками
 type NoteRepository interface {
 	GetAllNotesFromDB(ctx context.Context, userID int64) ([]models.AllNotes, error)
+	InsertNoteToDB(ctx context.Context, userID int64, note string, createdAt time.Time) error
 }
 
 type noteRepository struct {
@@ -56,4 +58,13 @@ func (r *noteRepository) GetAllNotesFromDB(ctx context.Context, userID int64) ([
 	}
 
 	return notes, nil
+}
+
+// InsertNoteToDB - добавить новую заметку в БД
+func (r *noteRepository) InsertNoteToDB(ctx context.Context, userID int64, note string, createdAt time.Time) error {
+	query := "INSERT INTO all_notes (note,user_id,created_at) VALUES ($1, $2, $3)"
+
+	// Используйте ExecContext для операций INSERT/UPDATE/DELETE
+	_, err := r.db.ExecContext(ctx, query, note, userID, createdAt)
+	return err
 }

@@ -16,24 +16,32 @@ type Handler struct {
 	logger   *logging.Logger
 	userRepo repository.UserRepository
 	userSvc  service.UserService
+	noteRepo repository.NoteRepository
+	noteSvc  service.NoteService
 }
 
 // NewHandler создаёт новый обработчик
 func NewHandler(cfg *config.Config, logger *logging.Logger, db *sql.DB) *Handler {
 	userRepo := repository.NewUserRepository(db)
-	userSrv := service.NewUserService(userRepo, cfg)
+	userSvc := service.NewUserService(userRepo, cfg)
+
+	noteRepo := repository.NewNoteRepository(db)
+	noteSvc := service.NewNoteService(noteRepo, cfg)
 
 	return &Handler{
 		cfg:      cfg,
 		logger:   logger,
 		userRepo: userRepo,
-		userSvc:  userSrv,
+		userSvc:  userSvc,
+		noteRepo: noteRepo,
+		noteSvc:  noteSvc,
 	}
 }
 
 // RegisterRoutes регистрирует маршруты
 func (h *Handler) RegisterRoutes(router *httprouter.Router) {
 	userHandler := NewUserHandler(h.userSvc, h.logger)
+	noteHandler := NewNoteHandler(h.noteSvc, h.logger)
 
 	router.POST("/register", userHandler.register)                       // Регистрация (создание нового пользователя)
 	router.POST("/login", userHandler.login)                             // Логин (получение access и refresh токенов)
@@ -41,4 +49,6 @@ func (h *Handler) RegisterRoutes(router *httprouter.Router) {
 	router.POST("/logout", userHandler.logout)                           // Выход из системы
 	router.GET("/protected", middleware.Auth(userHandler.protected))     // Защищённый маршрут, доступный только при наличии валидного access-токена
 	router.GET("/users/me", middleware.Auth(userHandler.getUserProfile)) // Получить данные о текущем пользователе
+
+	router.GET("/notes", middleware.Auth(noteHandler.getAllNotes)) // Получить все заметки
 }

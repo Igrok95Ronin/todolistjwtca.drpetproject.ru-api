@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-// UserService - интерфейс для работы с бизнес-логикой заметок
+// UserService - интерфейс для работы с бизнес-логикой пользователей
 type UserService interface {
 	UserExists(ctx context.Context, users models.Users) error
 	Login(ctx context.Context, w http.ResponseWriter, users models.Users) error

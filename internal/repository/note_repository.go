@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/errors"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/models"
 	"time"
 )
@@ -11,6 +12,7 @@ import (
 type NoteRepository interface {
 	GetAllNotesFromDB(ctx context.Context, userID int64) ([]models.AllNotes, error)
 	InsertNoteToDB(ctx context.Context, userID int64, note string, createdAt time.Time) error
+	UpdateNoteToDB(ctx context.Context, id int64, note string) error
 }
 
 type noteRepository struct {
@@ -67,4 +69,27 @@ func (r *noteRepository) InsertNoteToDB(ctx context.Context, userID int64, note 
 	// Используйте ExecContext для операций INSERT/UPDATE/DELETE
 	_, err := r.db.ExecContext(ctx, query, note, userID, createdAt)
 	return err
+}
+
+// UpdateNoteToDB - обновить заметку в БД
+func (r *noteRepository) UpdateNoteToDB(ctx context.Context, id int64, note string) error {
+	query := "UPDATE all_notes SET note = $1 WHERE id = $2"
+
+	// Используйте ExecContext для операций INSERT/UPDATE/DELETE
+	result, err := r.db.ExecContext(ctx, query, note, id)
+	if err != nil {
+		return errors.ErrNoteToUpdate
+	}
+
+	// Проверяем, что запись была обновлена
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return errors.FailedToCheckAffectedRows
+	}
+
+	if rowsAffected == 0 {
+		return errors.ErrNoteNotFound
+	}
+
+	return nil
 }

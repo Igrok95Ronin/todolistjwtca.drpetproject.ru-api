@@ -134,3 +134,18 @@
 [36mINFO[0m[2025-03-26T16:34:50+03:00]main.go:54 main.start() Сервер запущен на :8082                      
 [36mINFO[0m[2025-03-27T12:09:09+03:00]main.go:54 main.start() Сервер запущен на :8082                      
 [36mINFO[0m[2025-03-27T12:11:44+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[36mINFO[0m[2025-03-27T13:59:14+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[36mINFO[0m[2025-03-27T14:02:44+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[36mINFO[0m[2025-03-27T14:03:02+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[36mINFO[0m[2025-03-27T22:12:12+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[36mINFO[0m[2025-03-27T22:19:23+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[36mINFO[0m[2025-03-27T22:49:22+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[36mINFO[0m[2025-03-27T22:50:44+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[31mERRO[0m[2025-03-27T22:51:22+03:00]note_handler.go:101 github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers.(*NoteHandler).updateNote() Ошибка при обновлении записи по id: 0 Заметка Не Найдена 
+[31mERRO[0m[2025-03-27T22:51:38+03:00]note_handler.go:101 github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers.(*NoteHandler).updateNote() Ошибка при обновлении записи по id: 0 Заметка Не Найдена 
+[31mERRO[0m[2025-03-27T22:51:51+03:00]note_handler.go:101 github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers.(*NoteHandler).updateNote() Ошибка при обновлении записи по id: -1 Заметка Не Найдена 
+[36mINFO[0m[2025-03-27T22:55:16+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[31mERRO[0m[2025-03-27T22:55:17+03:00]note_handler.go:101 github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers.(*NoteHandler).updateNote() Ошибка при обновлении записи по id: -1 ID не может быть отрицательным или равным 0 
+[31mERRO[0m[2025-03-27T22:56:30+03:00]note_handler.go:101 github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers.(*NoteHandler).updateNote() Ошибка при обновлении записи по id: 25 Заметка Не Найдена 
+[36mINFO[0m[2025-03-27T22:57:38+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[31mERRO[0m[2025-03-27T22:57:40+03:00]note_handler.go:101 github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers.(*NoteHandler).updateNote() Ошибка при обновлении записи по id: 25 Заметка Не Найдена 

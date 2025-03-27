@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/errors"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/service"
-	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/transport/rest/dto/request"
+	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/transport/dto/request"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/pkg/httperror"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/pkg/logging"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
+	"strconv"
 )
 
 // NoteHandler обрабатывает запросы, связанные с заметками
@@ -82,6 +83,7 @@ func (h *NoteHandler) createPost(w http.ResponseWriter, r *http.Request, _ httpr
 
 // Обновить заметку
 func (h *NoteHandler) updateNote(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	ctx := r.Context()
 	var req request.UpdateNoteDTO
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -91,6 +93,14 @@ func (h *NoteHandler) updateNote(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 
-	id := ps.ByName("id")
+	id, _ := strconv.Atoi(ps.ByName("id"))
 
+	// UpdateNoteDataValidation - обновление заметки, валидация данных
+	if err := h.noteService.UpdateNoteDataValidation(ctx, int64(id), req.Note); err != nil {
+		httperror.WriteJSONError(w, "Ошибка при обновления записи в БД", err, http.StatusInternalServerError)
+		h.logger.Errorf("Ошибка при обновлении записи по id: %v %s", id, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }

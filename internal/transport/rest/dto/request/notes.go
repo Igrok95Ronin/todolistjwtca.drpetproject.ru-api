@@ -4,3 +4,8 @@ package request
 type CreateNoteDTO struct {
 	Note string `json:"note"`
 }
+
+// UpdateNote DTO для входящего запроса
+type UpdateNoteDTO struct {
+	CreateNoteDTO
+}

@@ -2,17 +2,13 @@ package handlers
 
 import (
 	"encoding/json"
-	"errors"
+	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/errors"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/service"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/transport/rest/dto/request"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/pkg/httperror"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/pkg/logging"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
-)
-
-var (
-	ErrNoteJSONNewDecoder = errors.New("Ошибка декодирования в JSON")
 )
 
 // NoteHandler обрабатывает запросы, связанные с заметками
@@ -70,9 +66,8 @@ func (h *NoteHandler) createPost(w http.ResponseWriter, r *http.Request, _ httpr
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		// Если произошла ошибка декодирования, возвращаем клиенту ошибку с кодом 400
-		httperror.WriteJSONError(w, ErrNoteJSONNewDecoder.Error(), err, http.StatusBadRequest)
-		// Логируем ошибку
-		h.logger.Errorf("%s: %s", ErrNoteJSONNewDecoder, err)
+		httperror.WriteJSONError(w, errors.ErrJSONNewDecoder.Error(), err, http.StatusBadRequest)
+		h.logger.Errorf("%s: %s", errors.ErrJSONNewDecoder, err)
 		return
 	}
 
@@ -83,4 +78,19 @@ func (h *NoteHandler) createPost(w http.ResponseWriter, r *http.Request, _ httpr
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// Обновить заметку
+func (h *NoteHandler) updateNote(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	var req request.UpdateNoteDTO
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		// Если произошла ошибка декодирования, возвращаем клиенту ошибку с кодом 400
+		httperror.WriteJSONError(w, errors.ErrJSONNewDecoder.Error(), err, http.StatusBadRequest)
+		h.logger.Errorf("%s: %s", errors.ErrJSONNewDecoder, err)
+		return
+	}
+
+	id := ps.ByName("id")
+
 }

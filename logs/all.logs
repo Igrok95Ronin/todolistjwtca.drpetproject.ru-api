@@ -131,3 +131,5 @@
 [31mERRO[0m[2025-03-26T16:18:26+03:00]note_handler.go:79 github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers.NoteHandler.createPost() %!w(*errors.errorString=&{Ошибка декодирования в JSON}): invalid character '\r' in string literal 
 [36mINFO[0m[2025-03-26T16:23:08+03:00]main.go:54 main.start() Сервер запущен на :8082                      
 [36mINFO[0m[2025-03-26T16:31:49+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[36mINFO[0m[2025-03-26T16:34:50+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[36mINFO[0m[2025-03-27T12:09:09+03:00]main.go:54 main.start() Сервер запущен на :8082                      

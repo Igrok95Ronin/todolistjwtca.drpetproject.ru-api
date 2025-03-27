@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/service"
+	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/transport/rest/dto/request"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/pkg/httperror"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/pkg/logging"
 	"github.com/julienschmidt/httprouter"
@@ -55,11 +56,6 @@ func (h *NoteHandler) getAllNotes(w http.ResponseWriter, r *http.Request, _ http
 	}
 }
 
-// CreateNoteRequest DTO для входящего запроса
-type CreateNoteRequest struct {
-	Note string `json:"note"`
-}
-
 // Создать заметку
 func (h *NoteHandler) createPost(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	ctx := r.Context()
@@ -70,9 +66,9 @@ func (h *NoteHandler) createPost(w http.ResponseWriter, r *http.Request, _ httpr
 		return
 	}
 
-	var note CreateNoteRequest
+	var req request.CreateNoteDTO
 
-	if err := json.NewDecoder(r.Body).Decode(&note); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		// Если произошла ошибка декодирования, возвращаем клиенту ошибку с кодом 400
 		httperror.WriteJSONError(w, ErrNoteJSONNewDecoder.Error(), err, http.StatusBadRequest)
 		// Логируем ошибку
@@ -81,7 +77,7 @@ func (h *NoteHandler) createPost(w http.ResponseWriter, r *http.Request, _ httpr
 	}
 
 	// ValidateTheNoteBeforeInserting - валидация заметки перед вставкой
-	if err := h.noteService.ValidateNoteBeforeInserting(ctx, userID, note.Note); err != nil {
+	if err := h.noteService.ValidateNoteBeforeInserting(ctx, userID, req.Note); err != nil {
 		httperror.WriteJSONError(w, "Ошибка при добавлении новой заметки", err, http.StatusInternalServerError)
 		return
 	}

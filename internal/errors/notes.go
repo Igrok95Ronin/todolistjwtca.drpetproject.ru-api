@@ -11,4 +11,6 @@ var (
 
 	ErrNoteToUpdate           = errors.New("Не удалось обновить заметку")
 	FailedToCheckAffectedRows = errors.New("Не удалось проверить затронутые строки")
+
+	ErrDeleteNote = errors.New("Ошибка при удалении заметки")
 )

@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/errors"
 	"github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/models"
 	"time"
@@ -13,6 +14,7 @@ type NoteRepository interface {
 	GetAllNotesFromDB(ctx context.Context, userID int64) ([]models.AllNotes, error)
 	InsertNoteToDB(ctx context.Context, userID int64, note string, createdAt time.Time) error
 	UpdateNoteToDB(ctx context.Context, id int64, note string) error
+	DeleteNoteFromDB(ctx context.Context, id int64) error
 }
 
 type noteRepository struct {
@@ -85,6 +87,28 @@ func (r *noteRepository) UpdateNoteToDB(ctx context.Context, id int64, note stri
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
 		return errors.FailedToCheckAffectedRows
+	}
+
+	if rowsAffected == 0 {
+		return errors.ErrNoteNotFound
+	}
+
+	return nil
+}
+
+// DeleteNoteFromDB - удалить заметку из БД
+func (r *noteRepository) DeleteNoteFromDB(ctx context.Context, id int64) error {
+	query := "DELETE FROM all_notes WHERE id = $1"
+
+	result, err := r.db.ExecContext(ctx, query, id)
+	if err != nil {
+		return fmt.Errorf("%w: %v", errors.ErrDeleteNote, err)
+	}
+
+	// Возвращает количество строк, затронутых обновлением, вставкой или удалением.
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("%w: %v", errors.FailedToCheckAffectedRows, err)
 	}
 
 	if rowsAffected == 0 {

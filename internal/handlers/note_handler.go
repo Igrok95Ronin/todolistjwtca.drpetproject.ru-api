@@ -104,3 +104,18 @@ func (h *NoteHandler) updateNote(w http.ResponseWriter, r *http.Request, ps http
 
 	w.WriteHeader(http.StatusOK)
 }
+
+// Удалить конкретную заметку
+func (h *NoteHandler) deleteNote(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	ctx := r.Context()
+
+	id, _ := strconv.Atoi(ps.ByName("id"))
+
+	if err := h.noteService.DeleteNote(ctx, int64(id)); err != nil {
+		httperror.WriteJSONError(w, errors.ErrDeleteNote.Error(), err, http.StatusInternalServerError)
+		h.logger.Errorf("%w : %v : %s", errors.ErrDeleteNote, id, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}

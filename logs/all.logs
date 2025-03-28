@@ -149,3 +149,4 @@
 [31mERRO[0m[2025-03-27T22:56:30+03:00]note_handler.go:101 github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers.(*NoteHandler).updateNote() Ошибка при обновлении записи по id: 25 Заметка Не Найдена 
 [36mINFO[0m[2025-03-27T22:57:38+03:00]main.go:54 main.start() Сервер запущен на :8082                      
 [31mERRO[0m[2025-03-27T22:57:40+03:00]note_handler.go:101 github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers.(*NoteHandler).updateNote() Ошибка при обновлении записи по id: 25 Заметка Не Найдена 
+[36mINFO[0m[2025-03-27T22:58:01+03:00]main.go:54 main.start() Сервер запущен на :8082                      

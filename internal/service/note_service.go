@@ -18,6 +18,7 @@ type NoteService interface {
 	GetAllNotes(ctx context.Context, userID int64) ([]models.AllNotes, error)
 	ValidateNoteBeforeInserting(ctx context.Context, userID int64, note string) error
 	UpdateNoteDataValidation(ctx context.Context, id int64, note string) error
+	DeleteNote(ctx context.Context, id int64) error
 }
 
 type noteService struct {
@@ -74,6 +75,20 @@ func (s *noteService) UpdateNoteDataValidation(ctx context.Context, id int64, no
 	}
 
 	if err := s.repo.UpdateNoteToDB(ctx, id, note); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// DeleteNote - удалить заметку, валидация данных
+func (s *noteService) DeleteNote(ctx context.Context, id int64) error {
+	if id <= 0 {
+		return errors.ErrIDCannotBeNegativeOrEqualToZero
+	}
+
+	// DeleteNoteFromDB - удалить заметку из БД
+	if err := s.repo.DeleteNoteFromDB(ctx, id); err != nil {
 		return err
 	}
 

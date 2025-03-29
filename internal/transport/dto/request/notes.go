@@ -9,3 +9,8 @@ type CreateNoteDTO struct {
 type UpdateNoteDTO struct {
 	CreateNoteDTO
 }
+
+// CheckNoteDTO DTO для входящего запроса
+type CheckNoteDTO struct {
+	Check bool `json:"check"`
+}

@@ -113,7 +113,32 @@ func (h *NoteHandler) deleteNote(w http.ResponseWriter, r *http.Request, ps http
 
 	if err := h.noteService.DeleteNote(ctx, int64(id)); err != nil {
 		httperror.WriteJSONError(w, errors.ErrDeleteNote.Error(), err, http.StatusInternalServerError)
-		h.logger.Errorf("%w : %v : %s", errors.ErrDeleteNote, id, err)
+		h.logger.Errorf("%s : %v : %s", errors.ErrDeleteNote, id, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+// Отметить заметку выполненной
+func (h *NoteHandler) markNoteCompleted(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	ctx := r.Context()
+
+	id, _ := strconv.Atoi(ps.ByName("id"))
+
+	var req request.CheckNoteDTO
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		// Если произошла ошибка декодирования, возвращаем клиенту ошибку с кодом 400
+		httperror.WriteJSONError(w, errors.ErrJSONNewDecoder.Error(), err, http.StatusBadRequest)
+		h.logger.Errorf("%s: %s", errors.ErrJSONNewDecoder, err)
+		return
+	}
+
+	// MarkNoteCompleted - Отметить заметку выполненной, валидация данных
+	if err := h.noteService.MarkNoteCompleted(ctx, int64(id), req.Check); err != nil {
+		httperror.WriteJSONError(w, errors.ErrNoteToUpdate.Error(), err, http.StatusInternalServerError)
+		h.logger.Errorf("%s : %v : %s", errors.ErrNoteToUpdate, id, err)
 		return
 	}
 

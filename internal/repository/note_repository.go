@@ -15,6 +15,7 @@ type NoteRepository interface {
 	InsertNoteToDB(ctx context.Context, userID int64, note string, createdAt time.Time) error
 	UpdateNoteToDB(ctx context.Context, id int64, note string) error
 	DeleteNoteFromDB(ctx context.Context, id int64) error
+	MarkNoteCompletedToDB(ctx context.Context, id int64, check bool) error
 }
 
 type noteRepository struct {
@@ -106,6 +107,29 @@ func (r *noteRepository) DeleteNoteFromDB(ctx context.Context, id int64) error {
 	}
 
 	// Возвращает количество строк, затронутых обновлением, вставкой или удалением.
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("%w: %v", errors.FailedToCheckAffectedRows, err)
+	}
+
+	if rowsAffected == 0 {
+		return errors.ErrNoteNotFound
+	}
+
+	return nil
+}
+
+// MarkNoteCompleted - Отметить заметку выполненной в БД
+func (r *noteRepository) MarkNoteCompletedToDB(ctx context.Context, id int64, check bool) error {
+	query := "UPDATE all_notes SET completed = $1 WHERE id = $2"
+
+	// Используйте ExecContext для операций INSERT/UPDATE/DELETE
+	result, err := r.db.ExecContext(ctx, query, check, id)
+	if err != nil {
+		return fmt.Errorf("%w: %v", errors.ErrNoteToUpdate, err)
+	}
+
+	// Проверяем, что запись была обновлена
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
 		return fmt.Errorf("%w: %v", errors.FailedToCheckAffectedRows, err)

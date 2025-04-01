@@ -50,10 +50,12 @@ func (h *Handler) RegisterRoutes(router *httprouter.Router) {
 	router.GET("/protected", middleware.Auth(userHandler.protected))     // Защищённый маршрут, доступный только при наличии валидного access-токена
 	router.GET("/users/me", middleware.Auth(userHandler.getUserProfile)) // Получить данные о текущем пользователе
 
-	router.GET("/notes", middleware.Auth(noteHandler.getAllNotes))                     // Получить все заметки
-	router.POST("/notes", middleware.Auth(noteHandler.createPost))                     // Создать заметку
-	router.PUT("/notes/:id", middleware.Auth(noteHandler.updateNote))                  // Обновить заметку
-	router.DELETE("/notes/:id", middleware.Auth(noteHandler.deleteNote))               // Удалить конкретную заметку
-	router.PUT("/notes/:id/completed", middleware.Auth(noteHandler.markNoteCompleted)) // Отметить заметку выполненной
-	router.DELETE("/notes", middleware.Auth(noteHandler.deleteAllNotes))               // Удалить все заметки
+	router.GET("/notes", middleware.Auth(noteHandler.getAllNotes))                          // Получить все заметки
+	router.POST("/notes", middleware.Auth(noteHandler.createPost))                          // Создать заметку
+	router.DELETE("/notes", middleware.Auth(noteHandler.deleteAllNotes))                    // Удалить все заметки
+	router.DELETE("/notes/completed", middleware.Auth(noteHandler.deleteAllCompletedNotes)) // Удалить все выполненные заметки
+	router.PUT("/notes/:id", middleware.Auth(noteHandler.updateNote))                       // Обновить заметку
+	router.DELETE("/note/:id", middleware.Auth(noteHandler.deleteNote))                     // Удалить конкретную заметку
+	router.PUT("/notes/:id/completed", middleware.Auth(noteHandler.markNoteCompleted))      // Отметить заметку выполненной
+
 }

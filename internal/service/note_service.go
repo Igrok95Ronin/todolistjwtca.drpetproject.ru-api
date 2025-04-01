@@ -21,6 +21,7 @@ type NoteService interface {
 	DeleteNote(ctx context.Context, id int64) error
 	MarkNoteCompleted(ctx context.Context, id int64, check bool) error
 	DeleteAllNotes(ctx context.Context, userID int64) error
+	DeleteAllCompletedNotes(ctx context.Context, userID int64) error
 }
 
 type noteService struct {
@@ -119,6 +120,20 @@ func (s *noteService) DeleteAllNotes(ctx context.Context, userID int64) error {
 
 	// DeleteAllNotes - Удалить все заметки из БД
 	if err := s.repo.DeleteAllNotesFromDB(ctx, userID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// DeleteAllCompletedNotes - Удалить все выполненные заметки, валидация данных
+func (s *noteService) DeleteAllCompletedNotes(ctx context.Context, userID int64) error {
+	if userID <= 0 {
+		return errors.ErrIDCannotBeNegativeOrEqualToZero
+	}
+
+	// DeleteAllCompletedNotesFromDB - Удалить все выполненные заметки из БД
+	if err := s.repo.DeleteAllCompletedNotesFromDB(ctx, userID); err != nil {
 		return err
 	}
 

@@ -164,3 +164,23 @@ func (h *NoteHandler) deleteAllNotes(w http.ResponseWriter, r *http.Request, _ h
 
 	w.WriteHeader(http.StatusOK)
 }
+
+// Удалить все выполненные заметки
+func (h *NoteHandler) deleteAllCompletedNotes(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	ctx := r.Context()
+	userID, ok := r.Context().Value("user_id").(int64)
+
+	if !ok {
+		h.logger.Error(errors.ErrFailedToGetUserIDFromContext)
+		httperror.WriteJSONError(w, errors.ErrFailedToGetUserIDFromContext.Error(), nil, http.StatusInternalServerError)
+		return
+	}
+
+	if err := h.noteService.DeleteAllCompletedNotes(ctx, userID); err != nil {
+		h.logger.Errorf("%s: %s", errors.ErrDeletingAllNotes, err)
+		httperror.WriteJSONError(w, errors.ErrDeletingAllNotes.Error(), err, http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}

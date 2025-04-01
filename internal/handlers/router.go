@@ -55,4 +55,5 @@ func (h *Handler) RegisterRoutes(router *httprouter.Router) {
 	router.PUT("/notes/:id", middleware.Auth(noteHandler.updateNote))                  // Обновить заметку
 	router.DELETE("/notes/:id", middleware.Auth(noteHandler.deleteNote))               // Удалить конкретную заметку
 	router.PUT("/notes/:id/completed", middleware.Auth(noteHandler.markNoteCompleted)) // Отметить заметку выполненной
+	router.DELETE("/notes", middleware.Auth(noteHandler.deleteAllNotes))               // Удалить все заметки
 }

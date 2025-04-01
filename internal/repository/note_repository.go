@@ -16,6 +16,7 @@ type NoteRepository interface {
 	UpdateNoteToDB(ctx context.Context, id int64, note string) error
 	DeleteNoteFromDB(ctx context.Context, id int64) error
 	MarkNoteCompletedToDB(ctx context.Context, id int64, check bool) error
+	DeleteAllNotesFromDB(ctx context.Context, userID int64) error
 }
 
 type noteRepository struct {
@@ -127,6 +128,29 @@ func (r *noteRepository) MarkNoteCompletedToDB(ctx context.Context, id int64, ch
 	result, err := r.db.ExecContext(ctx, query, check, id)
 	if err != nil {
 		return fmt.Errorf("%w: %v", errors.ErrNoteToUpdate, err)
+	}
+
+	// Проверяем, что запись была обновлена
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("%w: %v", errors.FailedToCheckAffectedRows, err)
+	}
+
+	if rowsAffected == 0 {
+		return errors.ErrNoteNotFound
+	}
+
+	return nil
+}
+
+// DeleteAllNotes - Удалить все заметки из БД
+func (r *noteRepository) DeleteAllNotesFromDB(ctx context.Context, userID int64) error {
+	query := "DELETE FROM all_notes WHERE user_id = $1"
+
+	// Используйте ExecContext для операций INSERT/UPDATE/DELETE
+	result, err := r.db.ExecContext(ctx, query, userID)
+	if err != nil {
+		return fmt.Errorf("%w: %v", errors.ErrDeletingAllNotes, err)
 	}
 
 	// Проверяем, что запись была обновлена

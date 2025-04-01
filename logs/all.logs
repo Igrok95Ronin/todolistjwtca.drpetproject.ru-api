@@ -161,3 +161,9 @@
 [31mERRO[0m[2025-03-29T12:14:32+03:00]note_handler.go:141 github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers.(*NoteHandler).markNoteCompleted() Не удалось обновить заметку : 24 : Заметка Не Найдена 
 [36mINFO[0m[2025-03-29T12:14:59+03:00]main.go:54 main.start() Сервер запущен на :8082                      
 [31mERRO[0m[2025-03-29T12:15:00+03:00]note_handler.go:141 github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers.(*NoteHandler).markNoteCompleted() Не удалось обновить заметку : 24 : Заметка Не Найдена 
+[36mINFO[0m[2025-03-29T12:15:56+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[31mERRO[0m[2025-03-29T12:15:58+03:00]note_handler.go:141 github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers.(*NoteHandler).markNoteCompleted() Не удалось обновить заметку : 24 : Заметка Не Найдена 
+[36mINFO[0m[2025-04-01T10:48:21+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[31mERRO[0m[2025-04-01T10:49:10+03:00]note_handler.go:159 github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers.(*NoteHandler).deleteAllNotes() Ошибка при удалении всех заметок: Заметка Не Найдена 
+[36mINFO[0m[2025-04-01T10:50:10+03:00]main.go:54 main.start() Сервер запущен на :8082                      
+[31mERRO[0m[2025-04-01T10:50:24+03:00]note_handler.go:160 github.com/Igrok95Ronin/todolistjwtca.drpetproject.ru-api.git/internal/handlers.(*NoteHandler).deleteAllNotes() Ошибка при удалении всех заметок: ID не может быть отрицательным или равным 0 
